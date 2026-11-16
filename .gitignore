@@ -5,3 +5,5 @@ dist
 .env
 .training/
 .venv-training/
+unsloth_compiled_cache/
+__pycache__/
