@@ -298,9 +298,16 @@ def run_job(job_dir: Path) -> None:
                 "epochs": project["epochs"],
                 "maxSeqLength": max_seq_length,
                 "globalStep": int(trainer.state.global_step),
-                "finalLoss": trainer.state.log_history[-1].get("loss")
-                if trainer.state.log_history
-                else None,
+                # The last log entry is the end-of-run summary, which carries
+                # train_loss rather than loss; take the last per-step loss.
+                "finalLoss": next(
+                    (
+                        entry["loss"]
+                        for entry in reversed(trainer.state.log_history)
+                        if "loss" in entry
+                    ),
+                    None,
+                ),
             },
             indent=2,
         )
